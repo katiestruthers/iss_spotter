@@ -11,8 +11,6 @@ const request = require('request');
 const fetchMyIP = function(callback) {
   // use request to fetch IP address from JSON API
   request('https://api.ipify.org?format=json', (error, response, body) => {
-    const ip = JSON.parse(body);
-
     if (error) {
       callback(error, null);
       return;
@@ -25,8 +23,32 @@ const fetchMyIP = function(callback) {
       return;
     }
 
+    const ip = JSON.parse(body);
     callback(null, ip);
   });
 };
 
-module.exports = { fetchMyIP };
+const fetchCoordsByIP = function(ip, callback) {
+  request(`http://ipwho.is/${ip}`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+  
+    const data = JSON.parse(body);
+
+    if (!data.success) {
+      const msg = `It didn't work! Error: Success status was false. Server message says: ${data.message} when fetching for IP ${ip}.`;
+      callback(msg, null);
+      return;
+    }
+
+    const latLon = {
+      latitude: data.latitude,
+      longitude: data.longitude
+    };
+    callback(null, latLon);
+  });
+};
+
+module.exports = { fetchMyIP, fetchCoordsByIP };
