@@ -1,12 +1,10 @@
 const { nextISSTimesForMyLocation } = require('./iss');
+const { printPassTimes } = require('./printPassTimes');
 
 nextISSTimesForMyLocation((error, passTimes) => {
   if (error) {
     return console.log(error);
   }
 
-  for (let i = 0; i < passTimes.length; i++) {
-    let date = new Date(passTimes[i].risetime);
-    console.log(`Next pass at ${date} for ${passTimes[i].duration} seconds!`);
-  }
+  printPassTimes(passTimes);
 });
